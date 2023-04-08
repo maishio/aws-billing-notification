@@ -42,7 +42,7 @@ Configure an Incoming Webhook in your Microsoft Teams channel to receive notific
 
 ### Create terraform.tfvars
 
-Clone this repository and create terraform.tfvars into the `terrafrom/environments/prod` directory.
+Clone this repository and create `terraform.tfvars` into the `terrafrom/environments/prod` directory.
 
 ```bash
 git clone https://github.com/maishio/aws-billing-notification.git
@@ -97,8 +97,8 @@ terragrunt run-all destroy
 
 ## Change the Lambda function execution time
 
-Change the value of the `schedule_expression` attribute in `aws-billing-notification/modules/lambda/cloudwatch_event.tf`.
-After changing schedule_expression, rerun `terragrunt run-all plan` and `terragrunt run-all apply`.
+Change the value of the `schedule_expression` attribute in `aws-billing-notification/modules/lambda/cloudwatch_event.tf`.<br>
+After changing `schedule_expression`, rerun `terragrunt run-all plan` and `terragrunt run-all apply`.
 
 ```
 schedule_expression = "cron(0 0 * * ? *)"
