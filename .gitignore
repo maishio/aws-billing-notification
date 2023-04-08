@@ -18,7 +18,6 @@ __pycache__/
 .terragrunt-cache
 
 # vscode
-*.vscode
 *.code-workspace
 
 # lambda function
