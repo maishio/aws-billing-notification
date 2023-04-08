@@ -1,7 +1,3 @@
-# --------------------------------------------------------------------------------
-# 属性定義
-# --------------------------------------------------------------------------------
-
 variable "account" {
   type = map(string)
 }
@@ -14,6 +10,6 @@ variable "tags" {
   type = map(string)
 }
 
-variable "TEAMS_WEBHOOK_URL" {
+variable "teams_webhook_url" {
   type = string
 }
