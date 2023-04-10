@@ -2,12 +2,10 @@ import boto3
 import json
 import os
 import requests
-import traceback
 
 from datetime import datetime, timedelta, date
-from util.logger import LOG
-from util.teams import Teams
-
+from config.logger import logger
+from config.teams import Teams
 
 client = boto3.client('ce')
 
@@ -22,8 +20,8 @@ def lambda_handler(event, context) -> None:
         (title, detail) = get_message(total_billing, service_billings)
 
         post_teams(title, detail, service_billings)
-    except Exception as err:
-        LOG.ERROR(traceback.format_exc())
+    except Exception as e:
+        logger.exception(f"message: {e}")
 
 
 def get_total_billing(client) -> dict:
@@ -46,8 +44,8 @@ def get_total_billing(client) -> dict:
             'end': response['ResultsByTime'][0]['TimePeriod']['End'],
             'billing': response['ResultsByTime'][0]['Total']['AmortizedCost']['Amount'],
         }
-    except Exception as err:
-        raise Exception(str(err))
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_service_billings(client) -> list:
@@ -80,8 +78,8 @@ def get_service_billings(client) -> list:
                 'billing': item['Metrics']['AmortizedCost']['Amount']
             })
         return billings
-    except Exception as err:
-        raise Exception(str(err))
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_message(total_billing: dict, service_billings: list) -> (str, str):
@@ -107,8 +105,8 @@ def get_message(total_billing: dict, service_billings: list) -> (str, str):
             details.append(f'　・{service_name}: {billing:.2f} USD')
 
         return title, '\n'.join(details)
-    except Exception as err:
-        raise Exception(str(err))
+    except Exception as e:
+        raise Exception(str(e))
 
 def post_teams(title: str, detail: str, service_billings: list) -> None:
     try:
@@ -125,7 +123,7 @@ def post_teams(title: str, detail: str, service_billings: list) -> None:
                 continue
 
             service = {'name': f'{billing:.2f} USD', 'value':service_name, 'billing':billing}
-            LOG.info(f'service：{service}')
+            logger.info(f'service：{service}')
 
             facts.append(service)
 
@@ -152,7 +150,7 @@ def post_teams(title: str, detail: str, service_billings: list) -> None:
         teams = Teams(teams_web_url)
         response = teams.post(json.dumps(payload))
 
-        LOG.info(f'Teamsコスト通知連携ステータスコード：{response.status_code}')
+        logger.info(f'Teamsコスト通知連携ステータスコード：{response.status_code}')
     except Exception as err:
         raise Exception(str(err))
 
@@ -168,8 +166,8 @@ def get_total_cost_date_range() -> (str, str):
             begin_of_month = end_of_month.replace(day=1)
             return begin_of_month.date().isoformat(), end_date
         return start_date, end_date
-    except Exception as err:
-        raise Exception(str(err))
+    except Exception as e:
+        raise Exception(str(e))
 
 def get_begin_of_month() -> str:
     return date.today().replace(day=1).isoformat()
