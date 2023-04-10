@@ -1,94 +1,105 @@
 # AWS Billing Notification Lambda Function
 
-## 概要
+AWS Billing notification Lambda function terraform module.
 
-AWS利用料金をTeamsに日次で通知するLambda関数を構築するTerraform
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Requirements](#requirements)
+- [Providers](#providers)
+- [Set up](#set-up)
+- [Execute terraform](#execute-terraform)
+- [Destroy the resources](#destroy-the-resources)
+- [Change the Lambda function execution time](#change-the-lambda-function-execution-time)
+
+## Prerequisites
+
+- [AWS account](https://aws.amazon.com/)
+- [AWS CLI](https://aws.amazon.com/cli/) >= 2.0.x
+- [Terraform](https://www.terraform.io/downloads.html)
+- [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/)
+- Incoming Webhook configured in your Microsoft Teams channel
 
 ## Requirements
 
-|Name|Version|
-|----|-------|
-|terraform|~> 1.1.19|
-|terragrunt|~> 0.37.1|
+| Name      | Version   |
+|-----------|-----------|
+|terraform  | >= 1.3.0  |
+|terragrunt | >= 0.44.0 |
 
 ## Providers
 
-|Name|Version|
-|----|-------|
-|aws|~> 4.15.0|
+| Name | Version  |
+|------|----------|
+| aws  |~> 4.57.0 |
 
-## 環境構築
+## Set up
 
-- [環境構築手順](docs/README.md)
+### Incoming Webhook in Microsoft Teams
 
-## Microsoft Teams受信Webhookの準備
+Configure an Incoming Webhook in your Microsoft Teams channel to receive notifications.<br>
+ Refer to the [guide on setting up Incoming Webhooks in Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook?tabs=dotnet).
 
-1. [受信Webhookを作成する](https://docs.microsoft.com/ja-jp/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook)を参照してMicrosoft Teamsの受信Webhookを作成ください。    
-  
-2. /path/to/aws-billing-notification/modules/lambda/terraform.tfvarsを追加します。
+### Create terraform.tfvars
 
+Clone this repository and create `terraform.tfvars` into the `terrafrom/environments/prod` directory.
+
+```bash
+git clone https://github.com/maishio/aws-billing-notification.git
+touch aws-billing-notification/terrafrom/environments/prod/terraform.tfvars
 ```
-% touch /path/to/aws-billing-notification/modules/lambda/terraform.tfvars
+
+### Edit terraform.tfvars
+
+Edit the `terraform.tfvars` file and add the following variables.
+
+```terraform
+teams_webhook_url = "https://xxxxxxx.outlook.office.com/webhookb2/xxxxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/IncomingWebhook/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
-3. terraform.tfvarsに以下を追記して保存します。  
+### Edit env.hcl
 
-```
-TEAMS_WEBHOOK_URL = "{Teamsの受信Webhook URL}"
-```
-  
-※ {Teamsの受信Webhook URL}部分は環境に合わせて適宜変更ください。
+Modify the values of local variables in `aws-billing-notification/terrafrom/environments/prod/env.hcl` to suit your environment.
 
-
-### /path/to/aws-billing-notification/terraform/terragrunt.hclの編集
-
-terragrunt.hclのローカル変数の値を環境に合わせて修正ください。
-
-```
-# --------------------------------------------------------------------------------
-# ローカル変数
-# --------------------------------------------------------------------------------
-
+```terraform
 locals {
-  aws_account_id   = 123456789012"        # AWSリソースを作成するAWSアカウントID
-  aws_region_id    = "ap-northeast-1"     # AWSリソースを作成するリージョン
-  service          = "example"            # AWSリソースに設定するserviceタグの値
-  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
-  env              = local.environment_vars.locals.env
+  aws_account_id = "123456789012"
+  aws_region_id  = "us-east-1"
+  env            = "myEnv"
+  service        = "myService"
 }
 ```
 
-## Terragruntの実行
+## Execute terraform
 
-### AWSリソースを作成する
+Initialize terraform and display the plan.
 
-```
-% cd /path/to/aws-billing-notification/terraform/environments/prod
-% terragrunt run-all init --terragrunt-non-interactive
-% terragrunt run-all plan
-% terragrunt run-all apply
-```
-
-### tfstateで管理されているAWSリソースを一覧を表示する
-
-```
-% cd /path/to/aws-billing-notification/terraform/environments/prod
-% terraform state list
+```bash
+cd aws-billing-notification/terrafrom/environments/prod
+terragrunt run-all init --terragrunt-non-interactive
+terragrunt run-all plan
 ```
 
-### AWSリソースを削除する
+Apply the plan.
 
+```bash
+terragrunt run-all apply
 ```
-% cd /path/to/aws-billing-notification/terraform/environments/prod
-% terragrunt run-all destroy
+
+## Destroy the resources
+
+destroy the resources.
+
+``` bash
+cd aws-billing-notification/terrafrom/environments/prod
+terragrunt run-all destroy
 ```
 
-## Lambda関数の起動時間を変更する手順
+## Change the Lambda function execution time
 
-/path/to/aws-billing-notification/modules/lambda/cloudwatch_event.tfのschedule_expression属性の値を変更します。
+Change the value of the `schedule_expression` attribute in `aws-billing-notification/modules/lambda/cloudwatch_event.tf`.<br>
+After changing `schedule_expression`, rerun `terragrunt run-all plan` and `terragrunt run-all apply`.
 
 ```
 schedule_expression = "cron(0 0 * * ? *)"
 ```
-
-※ 属性値を変更後は、terragrunt run-all plan、terragrunt run-all applyを再実行して変更を反映すること
