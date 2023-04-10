@@ -2,8 +2,8 @@
 
 locals {
   environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
-  aws_account_id   = local.environment_vars.locals.account_id
-  aws_region_id    = local.environment_vars.locals.region_id
+  aws_account_id   = local.environment_vars.locals.aws_account_id
+  aws_region_id    = local.environment_vars.locals.aws_region_id
   env              = local.environment_vars.locals.env
   service          = local.environment_vars.locals.service
 }
