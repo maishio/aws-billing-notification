@@ -63,10 +63,10 @@ Modify the values of local variables in `aws-billing-notification/terrafrom/envi
 
 ```terraform
 locals {
-  account_id = "123456789012"
-  region_id  = "ap-northeast-1"
-  env        = "prod"
-  service    = "example"
+  aws_account_id = "123456789012"
+  aws_region_id  = "us-east-1"
+  env            = "myEnv"
+  service        = "myService"
 }
 ```
 
