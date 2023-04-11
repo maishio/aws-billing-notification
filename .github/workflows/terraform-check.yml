@@ -10,7 +10,7 @@ jobs:
   check-and-plan:
     runs-on: ubuntu-latest
     env:
-      LOG_LEVEL: ERROR
+      LOG_LEVEL: INFO
     permissions:
       id-token: write
       contents: read
@@ -38,14 +38,23 @@ jobs:
         curl -sL -o terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
         sudo install -o root -g root -m 0755 terragrunt /usr/local/bin/
 
+    - name: Generate Terraform.tfvars
+      run: |
+        echo "teams_webhook_url = \"${{ secrets.TEAMS_WEBHOOK_URL }}\"" > terraform.tfvars
+        cat terraform.tfvars
+      working-directory:  ./terraform/environments/prod/lambda
+
+    - name: Modify env.hcl
+      run: |
+        ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+        sed -i "s/123456789012/${ACCOUNT}/" env.hcl
+        cat terraform.tfvars
+      working-directory:  ./terraform/environments/prod
+
     - name: Terraform Format
       id: format
       run: terraform fmt -check -recursive
       working-directory: ./terraform
-
-    - name: Generate Terraform.tfvars
-      run: echo "teams_webhook_url = \"${{ secrets.TEAMS_WEBHOOK_URL }}\"" > terraform.tfvars
-      working-directory:  ./terraform/environments/prod/lambda
 
     - name: Terragrunt init
       id: init
