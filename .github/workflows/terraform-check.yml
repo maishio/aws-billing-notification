@@ -38,12 +38,14 @@ jobs:
         curl -sL -o terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
         sudo install -o root -g root -m 0755 terragrunt /usr/local/bin/
 
-    - name: Terraform Format and Generate Terraform.tfvars
+    - name: Terraform Format
       id: format
-      run: |
-        terraform fmt -check -recursive
-        echo "teams_webhook_url = \"${{ secrets.TEAMS_WEBHOOK_URL }}\"" > ./terraform/environments/prod/lambda/terraform.tfvars
+      run: terraform fmt -check -recursive
       working-directory: ./terraform
+
+    - name: Generate Terraform.tfvars
+      run: echo "teams_webhook_url = \"${{ secrets.TEAMS_WEBHOOK_URL }}\"" > terraform.tfvars
+      working-directory:  ./terraform/environments/prod/lambda
 
     - name: Terragrunt init
       id: init
