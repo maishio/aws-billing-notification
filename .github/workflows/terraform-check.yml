@@ -50,7 +50,7 @@ jobs:
       working-directory:  ./terraform/environments/prod
 
     - name: Terraform Format
-      id: format
+      id: fmt
       run: terraform fmt -check -recursive
       working-directory: ./terraform
 
@@ -59,8 +59,43 @@ jobs:
       run: terragrunt run-all init --terragrunt-log-level $LOG_LEVEL --terragrunt-non-interactive
       working-directory: ./terraform/environments/prod
 
+    - name: Terragrunt Validate
+      id: validate
+      run: terragrunt run-all validate --terragrunt-log-level $LOG_LEVEL
+      working-directory: ./terraform/environments/prod
+
     - name: Terragrunt plan
       id: plan
       run: terragrunt run-all plan --terragrunt-log-level $LOG_LEVEL
       working-directory: ./terraform/environments/prod
       continue-on-error: true
+
+    - name: Update Pull Request
+      uses: actions/github-script@v6
+      if: github.evnet_name == 'pull_request'
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const output = `#### Terragrunt Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terragrunt Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terragrunt Plan 📖\`${{ steps.plan.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${context.actor}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
