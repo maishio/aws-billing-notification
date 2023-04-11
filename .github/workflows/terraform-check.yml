@@ -48,7 +48,7 @@ jobs:
       run: |
         ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
         sed -i "s/123456789012/${ACCOUNT}/" env.hcl
-        cat terraform.tfvars
+        cat env.hcl
       working-directory:  ./terraform/environments/prod
 
     - name: Terraform Format
