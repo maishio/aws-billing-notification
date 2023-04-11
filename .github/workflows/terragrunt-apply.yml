@@ -1,20 +1,21 @@
-name: Terraform check and plan
+name: Terragrunt apply
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    branches: [main, develop]
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
 
 jobs:
-  check-and-plan:
+  apply:
     runs-on: ubuntu-latest
     env:
       LOG_LEVEL: INFO
     permissions:
       id-token: write
       contents: read
-      pull-requests: write
 
     steps:
     - name: Checkout
@@ -39,7 +40,7 @@ jobs:
         curl -sL -o terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64"
         sudo install -o root -g root -m 0755 terragrunt /usr/local/bin/
 
-    - name: Generate Terraform.tfvars
+    - name: Generate terraform.tfvars
       run: echo "teams_webhook_url = \"${{ secrets.TEAMS_WEBHOOK_URL }}\"" > terraform.tfvars
       working-directory:  ./terraform/environments/prod/lambda
 
@@ -54,7 +55,7 @@ jobs:
       run: terraform fmt -check -recursive
       working-directory: ./terraform
 
-    - name: Terragrunt init
+    - name: Terragrunt Init
       id: init
       run: terragrunt run-all init --terragrunt-log-level $LOG_LEVEL --terragrunt-non-interactive
       working-directory: ./terraform/environments/prod
@@ -64,38 +65,12 @@ jobs:
       run: terragrunt run-all validate --terragrunt-log-level $LOG_LEVEL
       working-directory: ./terraform/environments/prod
 
-    - name: Terragrunt plan
+    - name: Terragrunt Plan
       id: plan
       run: terragrunt run-all plan --terragrunt-log-level $LOG_LEVEL
       working-directory: ./terraform/environments/prod
-      continue-on-error: true
 
-    - name: Update Pull Request
-      uses: actions/github-script@v6
-      if: github.evnet_name == 'pull_request'
-      env:
-        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          const output = `#### Terragrunt Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terragrunt Initialization ⚙️\`${{ steps.init.outcome }}\`
-            #### Terragrunt Plan 📖\`${{ steps.plan.outcome }}\`
-            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`\n
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>
-
-            *Pushed by: @${context.actor}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+    - name: Terragrunt Apply
+      id: apply
+      run: terragrunt run-all apply --terragrunt-log-level $LOG_LEVEL --terragrunt-non-interactive
+      working-directory: ./terraform/environments/prod
