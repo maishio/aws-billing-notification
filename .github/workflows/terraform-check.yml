@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       LOG_LEVEL: ERROR
-    strategy:
-      fail-fast: false
     permissions:
       id-token: write
       contents: read
@@ -26,7 +24,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-region: us-east-1
 
     - name: Setup Terraform
       id: setup-terraform
