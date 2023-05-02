@@ -26,7 +26,7 @@ EOF
 remote_state {
   backend = "s3"
   config = {
-    bucket  = "aws-billing-notification-tfstate-${local.aws_account_id}"
+    bucket  = "aws-billing-to-slack-tfstate-${local.aws_account_id}"
     encrypt = true
     key     = "tfstate/${local.service}/${local.env}/${basename(get_terragrunt_dir())}.tfstate"
     region  = local.aws_region_id
