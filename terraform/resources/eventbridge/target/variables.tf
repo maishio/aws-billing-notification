@@ -6,16 +6,10 @@ variable "arn" {
   type        = string
 }
 
-variable "input_path" {
+variable "path" {
   description = "Path to the input file."
   type        = string
   default     = null
-}
-
-variable "input_vars" {
-  description = "Variables to be used in the input file."
-  type        = map(string)
-  default     = {}
 }
 
 variable "role_arn" {
@@ -24,8 +18,19 @@ variable "role_arn" {
   default     = null
 }
 
+variable "rule" {
+  description = "Name of the rule you want to add targets to."
+  type        = string
+}
+
 variable "target_id" {
   description = "The unique target assignment ID. If missing, will generate a random, unique id."
   type        = string
   default     = null
+}
+
+variable "vars" {
+  description = "Variables to be used in the input file."
+  type        = map(string)
+  default     = {}
 }
