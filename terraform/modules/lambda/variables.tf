@@ -8,6 +8,11 @@ variable "slack_webhook_url" {
   type        = string
 }
 
+variable "region" {
+  description = "A map of AWS region."
+  type        = map(string)
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources."
   type        = map(string)
