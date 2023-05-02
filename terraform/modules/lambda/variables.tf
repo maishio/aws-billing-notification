@@ -3,14 +3,14 @@ variable "account" {
   type        = map(string)
 }
 
-variable "slack_webhook_url" {
-  description = "Slack webhook URL."
-  type        = string
-}
-
 variable "region" {
   description = "A map of AWS region."
   type        = map(string)
+}
+
+variable "slack_webhook_url" {
+  description = "Slack webhook URL."
+  type        = string
 }
 
 variable "tags" {
