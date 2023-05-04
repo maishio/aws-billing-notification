@@ -2,11 +2,10 @@ module "function" {
   source        = "../../resources/lambda/function"
   description   = "Daily notifications of aws billing to your slack."
   function_name = "${var.tags.service}-${var.tags.env}-notify-aws-billing"
-  memory_size   = 512
+  memory_size   = 256
   package_type  = "Image"
   image_uri     = "${module.ecr.ecr_repository.repository_url}:latest"
   role          = module.iam_role.iam_role.arn
-  runtime       = "python3.9"
   tags          = var.tags
   timeout       = 60
   environments = [
