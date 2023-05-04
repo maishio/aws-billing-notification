@@ -1,0 +1,17 @@
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Github
+.gitignore
+
+# Python
+.mypy_cache/
+.venv/
+**/__pycache__/
+
+# Terraform
+.terraform-version
+
+# VSCode
+.vscode/

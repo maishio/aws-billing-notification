@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  app:
+    build:
+      target: development
+    container_name: app
+    environment:
+      SLACK_WEBHOOK_URL: https://hooks.slack.com/services/xxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
+    volumes:
+      - ~/.aws/:/root/.aws:ro
+      - ./notify_aws_billing:/app/notify_aws_billing
+    command: ["/usr/local/bin/python", "-m", "notify_aws_billing.main"]
