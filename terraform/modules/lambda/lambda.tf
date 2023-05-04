@@ -1,31 +1,27 @@
-module "lambda" {
-  source = "../../resources/lambda"
-
-  # AWS Lambda Function
-  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function
-
-  description      = "AWS Billing Notification Function"
-  filename         = data.archive_file.function.output_path
-  function_name    = "${var.tags.service}-${var.tags.env}-billing-notification-function"
-  handler          = "app.lambda_handler"
-  layers           = [module.lambda_layer.lambda_layer_version.arn]
-  memory_size      = 512
-  role             = var.iam_role_arn
-  source_code_hash = data.archive_file.function.output_base64sha256
-  runtime          = "python3.9"
-  tags             = var.tags
-  timeout          = 180
+module "function" {
+  source        = "../../resources/lambda/function"
+  description   = "Daily notifications of aws billing to your slack."
+  function_name = "${var.tags.service}-${var.tags.env}-notify-aws-billing"
+  memory_size   = 512
+  package_type  = "Image"
+  image_uri     = "${module.ecr.ecr_repository.repository_url}:latest"
+  role          = module.iam_role.iam_role.arn
+  runtime       = "python3.9"
+  tags          = var.tags
+  timeout       = 60
   environments = [
     {
       variables = {
-        TEAMS_WEBHOOK_URL = var.teams_webhook_url
+        SLACK_WEBHOOK_URL = var.slack_webhook_url
       }
     }
   ]
+  depends_on = [null_resource.this]
+}
 
-  # AWS Lambda Permission
-  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission
-
-  principal  = "events.amazonaws.com"
-  source_arn = module.eventbridge.cloudwatch_event_rule.arn
+module "permission" {
+  source        = "../../resources/lambda/permission"
+  function_name = module.function.lambda_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = module.event_rule.cloudwatch_event_rule.arn
 }
