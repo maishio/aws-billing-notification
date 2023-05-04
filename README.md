@@ -1,44 +1,34 @@
-# AWS Billing Notification Lambda Function
+# AWS Billing to Slack
 
-AWS Billing notification Lambda function terraform module.
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Requirements](#requirements)
-- [Providers](#providers)
-- [Set up](#set-up)
-- [Execute terraform](#execute-terraform)
-- [Destroy the resources](#destroy-the-resources)
-- [Change the Lambda function execution time](#change-the-lambda-function-execution-time)
+This is a terragrutn module that creates an environment for daily notifications of aws billing to your slack.
 
 ## Prerequisites
 
-- [AWS account](https://aws.amazon.com/)
-- [AWS CLI](https://aws.amazon.com/cli/) >= 2.0.x
-- [Terraform](https://www.terraform.io/downloads.html)
+To use the code in this repository, the following software must be installed.
+
+- [AWS CLI](https://aws.amazon.com/cli/)
+- [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/)
-- Incoming Webhook configured in your Microsoft Teams channel
 
 ## Requirements
 
-| Name      | Version   |
-|-----------|-----------|
-|terraform  | >= 1.3.0  |
-|terragrunt | >= 0.44.0 |
+| Name       | Version   |
+| ---------- | --------- |
+| terraform  | ~> 1.4.4  |
+| terragrunt | >= 0.45.0 |
 
 ## Providers
 
-| Name | Version  |
-|------|----------|
-| aws  |~> 4.57.0 |
+| Name | Version   |
+| ---- | --------- |
+| aws  | ~> 4.62.0 |
 
 ## Set up
 
 ### Incoming Webhook in Microsoft Teams
 
 Configure an Incoming Webhook in your Microsoft Teams channel to receive notifications.<br>
- Refer to the [guide on setting up Incoming Webhooks in Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook?tabs=dotnet).
+Refer to the [guide on setting up Incoming Webhooks in Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook?tabs=dotnet).
 
 ### Create terraform.tfvars
 
@@ -90,7 +80,7 @@ terragrunt run-all apply
 
 destroy the resources.
 
-``` bash
+```bash
 cd aws-billing-notification/terrafrom/environments/prod
 terragrunt run-all destroy
 ```
