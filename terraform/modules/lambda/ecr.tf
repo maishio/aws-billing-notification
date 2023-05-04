@@ -14,7 +14,7 @@ resource "null_resource" "this" {
     command = <<EOT
       cd files/app
       aws ecr get-login-password --region ${var.region.id} | docker login --username AWS --password-stdin ${var.account.id}.dkr.ecr.${var.region.id}.amazonaws.com
-      docker build --platform amd64 -t ${var.account.id}.dkr.ecr.${var.region.id}.amazonaws.com/${var.tags.service}-${var.tags.env}-notify-aws-billing:latest --target production .
+      docker build --platform linux/amd64 -t ${var.account.id}.dkr.ecr.${var.region.id}.amazonaws.com/${var.tags.service}-${var.tags.env}-notify-aws-billing:latest --target production .
       docker push ${var.account.id}.dkr.ecr.${var.region.id}.amazonaws.com/${var.tags.service}-${var.tags.env}-notify-aws-billing:latest
     EOT
   }
