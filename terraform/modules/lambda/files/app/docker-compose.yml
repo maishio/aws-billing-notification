@@ -10,4 +10,4 @@ services:
     volumes:
       - ~/.aws/:/root/.aws:ro
       - ./notify_aws_billing:/app/notify_aws_billing
-    command: ["/usr/local/bin/python", "-m", "notify_aws_billing.main"]
+    command: ["/usr/local/bin/python", "-m", "notify_aws_billing.app"]

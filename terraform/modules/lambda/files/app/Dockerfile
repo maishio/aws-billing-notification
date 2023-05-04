@@ -44,4 +44,4 @@ FROM python-base as production
 COPY --from=production-build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY ./notify_aws_billing /app/notify_aws_billing
 WORKDIR /app
-CMD ["python", "-m", "notify_aws_billing.main"]
+CMD ["notify_aws_billing.app.handler"]

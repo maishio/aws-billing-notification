@@ -9,7 +9,7 @@ from notify_aws_billing.config.logger import logger
 SLACK_WEBHOOK_URL = os.environ["SLACK_WEBHOOK_URL"]
 
 
-def lambda_handler(event, context) -> None:
+def handler(event, context) -> None:
     client = boto3.client("ce", region_name="us-east-1")
 
     # get total and service-wise billing amounts
@@ -129,4 +129,4 @@ def get_total_cost_date_range() -> tuple[str, str]:
 
 
 if __name__ == "__main__":
-    lambda_handler({}, {})
+    handler({}, {})
