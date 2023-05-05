@@ -23,35 +23,38 @@ To use the code in this repository, the following software must be installed.
 | ---- | --------- |
 | aws  | ~> 4.62.0 |
 
-## Set up
+## Architecture
 
-### Incoming Webhook in Microsoft Teams
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/44653717/236378612-fff9ab87-1667-4cbc-81c2-90090651e2db.png" />
+</div>
 
-Configure an Incoming Webhook in your Microsoft Teams channel to receive notifications.<br>
-Refer to the [guide on setting up Incoming Webhooks in Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook?tabs=dotnet).
+## Preparations
 
-### Create terraform.tfvars
-
-Clone this repository and create `terraform.tfvars` into the `terrafrom/environments/prod` directory.
+1. Log in to your AWS account using the AWS CLI:
 
 ```bash
-git clone https://github.com/maishio/aws-billing-notification.git
-touch aws-billing-notification/terrafrom/environments/prod/terraform.tfvars
+aws configure
 ```
 
-### Edit terraform.tfvars
+2. Create an [incoming webhook](https://www.slack.com/apps/new/A0F7XDUAZ) that will post to the channel of your choice on your Slack workspace. Grab the URL for use in the next step.
 
-Edit the `terraform.tfvars` file and add the following variables.
+3. Clone this repository and create `terraform.tfvars` into the `terrafrom/environments/prod/lambda` directory:
 
-```terraform
-teams_webhook_url = "https://xxxxxxx.outlook.office.com/webhookb2/xxxxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/IncomingWebhook/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```bash
+git clone https://github.com/maishio/aws-billing-to-slack.git
+touch aws-billing-to-slack/terrafrom/environments/prod/lambda/terraform.tfvars
 ```
 
-### Edit env.hcl
+4. Edit the `terraform.tfvars` file and add the following variables:
 
-Modify the values of local variables in `aws-billing-notification/terrafrom/environments/prod/env.hcl` to suit your environment.
+```hcl
+slack_webhook_url = "https://hooks.slack.com/services/xxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx"
+```
 
-```terraform
+5. Modify the values of local variables in [env.hcl](terraform/environments/prod/env.hcl) to suit your environment.
+
+```hcl
 locals {
   aws_account_id = "123456789012"
   aws_region_id  = "us-east-1"
@@ -60,17 +63,22 @@ locals {
 }
 ```
 
-## Execute terraform
+## Deploy the resources
 
-Initialize terraform and display the plan.
+1. Initialize the Terraform working directory:
 
 ```bash
-cd aws-billing-notification/terrafrom/environments/prod
+cd aws-billing-to-slack/terrafrom/environments/prod
 terragrunt run-all init --terragrunt-non-interactive
+```
+
+2. plan the Terraform configuration:
+
+```bash
 terragrunt run-all plan
 ```
 
-Apply the plan.
+3. Apply the Terraform configuration:
 
 ```bash
 terragrunt run-all apply
@@ -81,13 +89,13 @@ terragrunt run-all apply
 destroy the resources.
 
 ```bash
-cd aws-billing-notification/terrafrom/environments/prod
+cd aws-billing-to-slack/terrafrom/environments/prod
 terragrunt run-all destroy
 ```
 
 ## Change the Lambda function execution time
 
-Change the value of the `schedule_expression` attribute in `aws-billing-notification/modules/lambda/cloudwatch_event.tf`.<br>
+Change the value of the `schedule_expression` attribute in `terraform/modules/lambda/eventbridge.tf`.<br>
 After changing `schedule_expression`, rerun `terragrunt run-all plan` and `terragrunt run-all apply`.
 
 ```
