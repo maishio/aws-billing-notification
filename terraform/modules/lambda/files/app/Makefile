@@ -16,7 +16,7 @@ black:
 	docker compose run --rm app black .
 
 build:
-	time docker build --platform amd64 -t ${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${SERVICE}-${ENV}-notify-aws-billing:latest --target production .
+	time docker build --platform=linux/amd64 -t ${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${SERVICE}-${ENV}-notify-aws-billing:latest --target production .
 	# time docker build -t ${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${SERVICE}-${ENV}-notify-aws-billing:latest --target production .
 
 build-dev:
