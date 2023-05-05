@@ -1,4 +1,4 @@
-FROM python:3.9.13-slim-bullseye as python-base
+FROM public.ecr.aws/lambda/python:3.9 as python-base
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -16,12 +16,8 @@ ENV PATH="$POETRY_HOME/bin:$PATH"
 
 # For initialize
 FROM python-base as initial
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    curl \
-    build-essential
-
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN yum -y update && \
+    curl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR $PYSETUP_PATH
 
@@ -33,7 +29,7 @@ COPY poetry.lock pyproject.toml ./
 # For development
 FROM build-base as development
 RUN poetry install
-WORKDIR /app
+WORKDIR ${LAMBDA_TASK_ROOT}
 
 # For production build
 FROM build-base as production-build
@@ -41,7 +37,6 @@ RUN poetry install --only main
 
 # For production
 FROM python-base as production
-COPY --from=production-build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY ./notify_aws_billing /app/notify_aws_billing
-WORKDIR /app
-CMD ["notify_aws_billing.app.handler"]
+COPY --from=production-build /var/lang/lib/python3.9/site-packages /var/lang/lib/python3.9/site-packages
+COPY ./notify_aws_billing ${LAMBDA_TASK_ROOT}
+CMD [ "app.handler" ]
