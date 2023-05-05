@@ -4,7 +4,8 @@ from datetime import date, datetime, timedelta
 
 import boto3
 import requests
-from notify_aws_billing.config.logger import logger
+
+from config.logger import logger
 
 SLACK_WEBHOOK_URL = os.environ["SLACK_WEBHOOK_URL"]
 
@@ -126,7 +127,3 @@ def get_total_cost_date_range() -> tuple[str, str]:
         end_of_month = datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=-1)
         start_date = end_of_month.replace(day=1).date().isoformat()
     return start_date, end_date
-
-
-if __name__ == "__main__":
-    handler({}, {})
