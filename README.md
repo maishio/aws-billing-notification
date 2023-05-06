@@ -101,3 +101,7 @@ After changing `schedule_expression`, rerun `terragrunt run-all plan` and `terra
 ```
 schedule_expression = "cron(0 0 * * ? *)"
 ```
+
+## Modules
+
+- [lambda](terraform/modules/lambda/README.md)
