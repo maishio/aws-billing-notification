@@ -1,31 +1,23 @@
-# python
-__pycache__/
+*.d.ts
+*.js
+*.zip
+node_modules
+cdktf.out
+cdktf.log
+*terraform.*.tfstate*
+.gen
+.terraform
+tsconfig.tsbuildinfo
+!jest.config.js
+!setup.js
 
-# .terraform directories
-**/.terraform/*
+# Misc
+.DS_Store
 
-# .tfstate files
+# Terraform
+.terraform.lock.hcl
+.terragrunt-cache
 *.tfstate
 *.tfstate.*
-
-# terraform.tfvars
+**/.terraform/*
 **/terraform.tfvars
-
-# terraform.lock hcl
-.terraform.lock.hcl
-
-# terragrunt-cache directory
-.terragrunt-cache
-
-# vscode
-*.code-workspace
-
-# lambda function
-**/output/*.zip
-
-# terragrunt
-**/backend.tf
-**/provider.tf
-
-# mac
-.DS_Store
