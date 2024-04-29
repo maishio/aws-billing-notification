@@ -1,14 +1,7 @@
-import { Construct } from "constructs";
-import { App, TerraformStack } from "cdktf";
+import { App } from "cdktf";
 
-class MyStack extends TerraformStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    // define resources here
-  }
-}
+import { BillingNotificationStack } from "./src/stacks/billing-notification";
 
 const app = new App();
-new MyStack(app, "tmp");
+new BillingNotificationStack(app, "billing-notification");
 app.synth();
