@@ -1,10 +1,10 @@
 {
   "editor.formatOnSave": true,
-  "[terraform]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[terraform-vars]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
