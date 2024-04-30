@@ -1,7 +1,7 @@
-import { App } from "cdktf";
+import { App } from "cdktf"
 
-import { BillingNotificationStack } from "./src/stacks/billing-notification";
+import { BillingNotificationStack } from "./src/stacks/billing-notification"
 
-const app = new App();
-new BillingNotificationStack(app, "billing-notification");
-app.synth();
+const app = new App()
+new BillingNotificationStack(app, "billing-notification")
+app.synth()

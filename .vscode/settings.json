@@ -15,11 +15,5 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
-  "cSpell.words": [
-    "cdktf",
-    "esbenp",
-    "eventbridge",
-    "lintfix",
-    "tfstate"
-  ]
+  "cSpell.words": ["cdktf", "esbenp", "eventbridge", "lintfix", "tfstate"]
 }
