@@ -33,6 +33,7 @@ export const createLambdaFunction = (
 
   const lambdaFunction = new LambdaFunction(scope, `${statementPrefix}-lambda-function`, {
     architectures: lambdaFunctionConfig.architectures || ["x86_64"],
+    description: lambdaFunctionConfig.description,
     environment: lambdaFunctionConfig.environment,
     filename: archiveFile.outputPath,
     functionName: lambdaFunctionConfig.functionName,
@@ -52,7 +53,7 @@ export const createLambdaFunction = (
   return { arn: lambdaFunction.arn, functionName: lambdaFunction.functionName }
 }
 
-export const CreateLambdaPermission = (
+export const createLambdaPermission = (
   scope: Construct,
   statementPrefix: string,
   config: LambdaPermissionConfig
