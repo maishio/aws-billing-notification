@@ -1,13 +1,18 @@
+import * as path from "path"
+
 import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-policy-document"
 import { TerraformStack } from "cdktf"
 import { Construct } from "constructs"
 
-import { TAGS } from "../../config"
+import { SLACK_WEBHOOK_URL, TAGS } from "../../config"
 import {
   configureArchiveProvider,
   configureAwsProvider,
   configureS3Backend,
+  createEventBridgeRule,
   createIamRole,
+  createLambdaFunction,
+  createLambdaPermission,
   createTrustPolicyDocument
 } from "../lib"
 
@@ -43,6 +48,47 @@ export class BillingNotificationStack extends TerraformStack {
       tags: TAGS
     }
 
-    createIamRole(this, "aws-billing-to-slack", iamRoleConfig, iamPolicyConfig)
+    const functionRole = createIamRole(this, "aws-billing-to-slack", iamRoleConfig, iamPolicyConfig)
+
+    const archiveFileConfig = {
+      type: "zip",
+      outputPath: path.join(__dirname, "../assets/billing-notifier/output/function.zip"),
+      sourceDir: path.join(__dirname, "../assets/billing-notifier/target/lambda/billing-notifier")
+    }
+
+    const lambdaFunctionConfig = {
+      description: "AWS billing notification function",
+      functionName: "aws-billing-to-slack",
+      handler: "bootstrap",
+      role: functionRole.arn,
+      runtime: "provided.al2",
+      tags: TAGS,
+      environment: {
+        variables: {
+          SLACK_WEBHOOK_URL: SLACK_WEBHOOK_URL
+        }
+      }
+    }
+
+    const lambdaFunction = createLambdaFunction(this, "aws-billing-to-slack", archiveFileConfig, lambdaFunctionConfig)
+
+    const eventBridgeRuleConfig = {
+      description: "AWS billing notification rule",
+      name: "aws-billing-to-slack-rule",
+      scheduleExpression: "cron(0 0 * * ? *)",
+      state: "ENABLED",
+      tags: TAGS
+    }
+
+    const eventRule = createEventBridgeRule(this, "aws-billing-to-slack", eventBridgeRuleConfig, lambdaFunction.arn)
+
+    const lambdaPermissionConfig = {
+      action: "lambda:InvokeFunction",
+      functionName: lambdaFunction.functionName,
+      principal: "events.amazonaws.com",
+      sourceArn: eventRule.arn
+    }
+
+    createLambdaPermission(this, "aws-billing-to-slack", lambdaPermissionConfig)
   }
 }
