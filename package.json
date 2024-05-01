@@ -8,6 +8,7 @@
   "scripts": {
     "apply": "cdktf deploy",
     "build": "tsc",
+    "cargo:build": "cargo lambda build --release --x86-64 --manifest-path src/assets/billing-notifier/Cargo.toml",
     "compile": "tsc --pretty",
     "get": "cdktf get",
     "lint:format": "prettier --check --ignore-path .prettierignore .",
