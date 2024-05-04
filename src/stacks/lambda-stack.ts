@@ -16,7 +16,7 @@ import {
 } from "../lib"
 import { SLACK_WEBHOOK_URL, tags } from "../util"
 
-export class BillingNotificationStack extends TerraformStack {
+export class LambdaStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
     super(scope, name)
 

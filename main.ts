@@ -1,7 +1,7 @@
 import { App } from "cdktf"
 
-import { BillingNotificationStack } from "./src/stacks/billing-notification"
+import { LambdaStack } from "./src/stacks/lambda-stack"
 
 const app = new App()
-new BillingNotificationStack(app, "billing-notification")
+new LambdaStack(app, "lambda-stack")
 app.synth()
