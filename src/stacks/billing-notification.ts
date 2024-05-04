@@ -4,7 +4,6 @@ import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-p
 import { TerraformStack } from "cdktf"
 import { Construct } from "constructs"
 
-import { SLACK_WEBHOOK_URL, TAGS } from "../../config"
 import {
   configureArchiveProvider,
   configureAwsProvider,
@@ -15,6 +14,7 @@ import {
   createLambdaPermission,
   createTrustPolicyDocument
 } from "../lib"
+import { SLACK_WEBHOOK_URL, tags } from "../util"
 
 export class BillingNotificationStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -39,13 +39,13 @@ export class BillingNotificationStack extends TerraformStack {
     const iamRoleConfig = {
       assumeRolePolicy: assumeRolePolicy,
       name: "aws-billing-to-slack-role",
-      tags: TAGS
+      tags: tags
     }
 
     const iamPolicyConfig = {
       name: "aws-billing-to-slack-policy",
       policy: policy,
-      tags: TAGS
+      tags: tags
     }
 
     const functionRole = createIamRole(this, "aws-billing-to-slack", iamRoleConfig, iamPolicyConfig)
@@ -62,7 +62,7 @@ export class BillingNotificationStack extends TerraformStack {
       handler: "bootstrap",
       role: functionRole.arn,
       runtime: "provided.al2",
-      tags: TAGS,
+      tags: tags,
       environment: {
         variables: {
           SLACK_WEBHOOK_URL: SLACK_WEBHOOK_URL
@@ -77,7 +77,7 @@ export class BillingNotificationStack extends TerraformStack {
       name: "aws-billing-to-slack-rule",
       scheduleExpression: "cron(0 0 * * ? *)",
       state: "ENABLED",
-      tags: TAGS
+      tags: tags
     }
 
     const eventRule = createEventBridgeRule(this, "aws-billing-to-slack", eventBridgeRuleConfig, lambdaFunction.arn)
