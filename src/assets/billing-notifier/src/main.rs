@@ -13,9 +13,9 @@ async fn handler(_event: LambdaEvent<Value>) -> Result<(), Error> {
     let (start_date, end_date) = get_date_range().await;
     let mut cost_and_usages = get_cost_and_usage_by_service(&start_date, &end_date).await?;
 
-	cost_and_usages.retain(|x| x.amount() != 0.0);
-	cost_and_usages.sort_by(|a, b| b.amount().partial_cmp(&a.amount()).unwrap());
-	cost_and_usages.iter().for_each(|x| {x.debug();});
+    cost_and_usages.retain(|x| x.amount() != 0.0);
+    cost_and_usages.sort_by(|a, b| b.amount().partial_cmp(&a.amount()).unwrap());
+    cost_and_usages.iter().for_each(|x| {x.debug();});
     Ok(())
 }
 
