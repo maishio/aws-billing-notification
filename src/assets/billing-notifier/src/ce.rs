@@ -6,8 +6,8 @@ use tracing::info;
 use std::str::FromStr;
 
 pub struct CostAndUsage{
-		service: String,
-		amount: f64,
+    service: String,
+    amount: f64,
 }
 impl CostAndUsage {
     pub fn amount(&self) -> f64 {
